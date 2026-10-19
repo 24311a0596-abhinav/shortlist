@@ -1,0 +1,12 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /users/{uid}/candidates/{id} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80
+        && request.resource.data.stage in ['Applied','Screening','Interview','Offer']
+        && request.resource.data.score is int && request.resource.data.score >= 0 && request.resource.data.score <= 5;
+    }
+  }
+}
